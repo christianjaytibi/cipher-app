@@ -1,0 +1,9 @@
+[theme]
+base = "dark"
+#primaryColor = "#9146ff"
+primaryColor = "#00FFA3"
+textColor = "#f0f0ff"
+font = "monospace"
+
+[client]
+toolbarMode = "viewer"
