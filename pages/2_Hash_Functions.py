@@ -4,7 +4,6 @@ import hashlib
 st.set_page_config(
     page_title="Hash Functions",
     page_icon="💫",
-    layout="centered"
 )
 
 if 'hash_btn_disabled' not in st.session_state:
@@ -16,7 +15,7 @@ if 'hash_btn_tooltip' not in st.session_state:
 
 def main() -> None:
 
-    st.markdown("### <span style=\"color:#00FFA3\"> Hash Functions </span>",
+    st.markdown("### <span style=\"color:#00FFA3;\"> Hash Functions </span>",
                 unsafe_allow_html=True)
 
     input_container = st.container(border=True)
@@ -25,22 +24,21 @@ def main() -> None:
 
     with input_container:
         hash_option = st.selectbox(
-            "HASHING ALGORITHM :red[*]",
+            "HASHING ALGORITHM",
             ("SHA-256", "SHA3-512", "MD5", "BLAKE2b"),
         )
 
         input_type = st.selectbox(
-            "INPUT TYPE :red[*]",
+            "INPUT TYPE",
             ("Text", "File"),
         )
 
-        user_input = None
         if input_type == 'Text':
             user_input = st.text_area(
-                "⚡ Insert text below :red[*]", key="user_input", placeholder="Type some magic words.")
+                "Insert text below :red[*]", height=200, key="user_input", placeholder="Type some magic words.")
         elif input_type == 'File':
             user_input = st.file_uploader(
-                "📤 Choose a file to upload :red[*]")
+                "📤 Choose a file to upload :red[*]", key="user_input")
 
         input_fields = (hash_option, input_type, user_input)
 
