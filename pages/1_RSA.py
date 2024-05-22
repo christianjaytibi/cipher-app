@@ -48,7 +48,6 @@ def main() -> None:
                 placeholder.empty()
 
                 with placeholder.container():
-                    # display_key_pair_attrib(privkey)
                     key_pair_download_btn(pubkey, privkey)
 
     with try_container:
@@ -71,19 +70,24 @@ def main() -> None:
                 use_container_width=True,
                 disabled=st.session_state.rsa_btn_disabled,
                 help=st.session_state.rsa_btn_tooltip):
-            key = key.getvalue()
-            if mode == "Encrypt":
-                key = load_key(key, "public")
-                output = rsa_encrypt_text(input_text, key)
-                output = output.hex()
+            try:
+                key = key.getvalue()
+                if mode == "Encrypt":
+                    key = load_key(key, "public")
+                    output = rsa_encrypt_text(input_text, key)
+                    output = output.hex()
 
-            elif mode == "Decrypt":
-                key = load_key(key, "private")
-                output = rsa_decrypt_text(input_text, key)
-                output = output.decode()
+                elif mode == "Decrypt":
+                    key = load_key(key, "private")
+                    output = rsa_decrypt_text(input_text, key)
+                    output = output.decode()
 
-            output_container.markdown(
-                f"<span style=\"color:#00FFA3\"> {output} </span>", unsafe_allow_html=True)
+                output_container.markdown(
+                    f"<span style=\"color:#00FFA3\"> {output} </span>", unsafe_allow_html=True)
+
+            except Exception:
+                st.error(
+                    f'An error occured. {"Encryption" if mode == "Encrypt" else "Decryption"} failed.', icon="🚨")
 
 
 @st.experimental_fragment
@@ -153,22 +157,18 @@ def generate_key_pair(size: int) -> tuple[bytes, bytes]:
 
 
 def load_key(keyfile: bytes, type: Literal['public', 'private']) -> tuple:
-    try:
-        if type == 'public':
-            public_key = serialization.load_pem_public_key(
-                keyfile,
-                backend=default_backend()
-            )
-            return public_key
-        elif type == 'private':
-            private_key = serialization.load_pem_private_key(
-                keyfile,
-                password=None,
-            )
-            return private_key
-
-    except Exception as e:
-        st.error(f"There was an error loading the key {e}", icon="🚨")
+    if type == 'public':
+        public_key = serialization.load_pem_public_key(
+            keyfile,
+            backend=default_backend()
+        )
+        return public_key
+    elif type == 'private':
+        private_key = serialization.load_pem_private_key(
+            keyfile,
+            password=None,
+        )
+        return private_key
 
 
 def rsa_encrypt_text(text: str, public_key: rsa.RSAPublicKey) -> bytes:
@@ -196,52 +196,6 @@ def rsa_decrypt_text(ciphertext: str, private_key: rsa.RSAPrivateKey) -> bytes:
     )
 
     return plaintext
-
-
-def display_key_pair_attrib(privkey) -> None:
-    st.markdown(
-        f"""
-        Prime factors :green[$p$] and :green[$q$]
-        $$ 
-        p = {privkey.p} 
-        $$
-
-        $$
-        q = {privkey.q}
-        $$
-        """
-    )
-
-    st.markdown(
-        f"""
-        Modulus :green[$n$]
-        $$
-        n = p × q
-        = {privkey.n} 
-        $$
-        """
-    )
-
-    st.markdown(
-        f"""
-        Public exponent :green[$e$]
-        $$
-        e = {privkey.e}
-        $$
-        """
-    )
-    st.markdown(
-        f"""
-        Private exponent :green[$d$]
-        $$
-        d = e^{{-1}} \mod \phi(n)
-        $$
-
-        $$
-        d = {privkey.d}
-        $$
-        """
-    )
 
 
 if __name__ == "__main__":
