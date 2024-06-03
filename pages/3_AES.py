@@ -7,7 +7,7 @@ from cryptography.hazmat.primitives import padding
 
 
 st.set_page_config(
-    page_title="Fernet",
+    page_title="AES",
     page_icon="💫",
 )
 
